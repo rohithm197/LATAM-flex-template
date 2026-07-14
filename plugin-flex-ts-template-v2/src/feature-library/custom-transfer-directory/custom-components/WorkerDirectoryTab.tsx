@@ -73,7 +73,7 @@ const QueueDirectoryTab = (props: OwnProps) => {
         // If worker is from PLHUB, display workers from both UK and PL locations
         if (isPLHUBWorker) {
           console.log('Filtering for PLHUB worker, showing workers from UK,IB and PLHUB.');
-          return workerAttrLocation === 'uk' || workerAttrLocation === 'ib' || workerAttrLocation === 'plhub';
+          return workerAttrLocation === 'uk' || workerAttrLocation === 'ib' || workerAttrLocation === 'plhub' || workerAttrLocation === 'pl'|| workerAttrLocation === 'dach'|| workerAttrLocation === 'cebi';
         }
 
         // Otherwise, filter by the current worker's location
