@@ -50,7 +50,7 @@ export const eventHook = function createCaseAfterTaskAcceptance(
           console.log('acceptedReservation else condition passed No SF Contact recognized ---')
           //screenPop();
     }
-  }else if (task.taskChannelUniqueName === 'chat') { // Ticket creation for ADA Chats
+  } else if (task.taskChannelUniqueName === 'chat') { // Ticket creation for ADA Chats
       const { sfcontactid, ticketId } = task.attributes;
       if (ticketId && ticketId !== '') {
         // Re-assign existing case owner on transfer
@@ -69,6 +69,8 @@ export const eventHook = function createCaseAfterTaskAcceptance(
         createSfChatTicket(task);
       }
 }
+}
+
 /*export const eventHook = async function createCaseAfterTaskAcceptance(
   flex: typeof Flex,
   manager: Flex.Manager,
