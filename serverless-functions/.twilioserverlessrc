@@ -1,5 +1,5 @@
 {
   "assetsFolder": "./src/assets",
   "functionsFolder": "./src/functions",
-  "runtime": "node20" 	
+  "runtime": "node22" 	
 }
