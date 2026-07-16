@@ -68,10 +68,9 @@ export const eventHook = function createCaseAfterTaskAcceptance(
         // Unknown contact
         createSfChatTicket(task);
       }
-}
+ }
 }
 
-// export const eventHook = async function createCaseAfterTaskAcceptance(
 //   flex: typeof Flex,
 //   manager: Flex.Manager,
 //   task: Flex.ITask,
