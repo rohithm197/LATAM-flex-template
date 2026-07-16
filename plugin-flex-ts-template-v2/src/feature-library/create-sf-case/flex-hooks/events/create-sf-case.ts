@@ -54,8 +54,10 @@ export const eventHook = function createCaseAfterTaskAcceptance(
       const { sfcontactid, ticketId } = task.attributes;
       if (ticketId && ticketId !== '') {
         // Re-assign existing case owner on transfer
+        console.log('Ticket owner updated in SF for existing ticketId1 chat: ' + ticketId);
         if (manager.workerClient?.attributes.userId) {
           updateSfTicket(ticketId, manager.workerClient.attributes.userId);
+           console.log('Ticket owner updated in SF for existing ticketId2 chat: ' + ticketId);
           screenPop(ticketId);
         } else {
           console.log('Cannot update SF ticket owner. Worker userId missing.');
@@ -63,50 +65,14 @@ export const eventHook = function createCaseAfterTaskAcceptance(
       } else if (sfcontactid && sfcontactid !== '') {
         // Known contact, no case yet
         screenPop(sfcontactid);
+        console.log('Creating SF chat ticket for known contact: ' + sfcontactid);
         createSfChatTicket(task);
       } else {
         // Unknown contact
         createSfChatTicket(task);
+
+        console.log('Creating SF chat ticket for unknown contact', task.attributes);
       }
  }
 }
 
-//   flex: typeof Flex,
-//   manager: Flex.Manager,
-//   task: Flex.ITask,
-// ) {
-//   console.log('Task attributes:', JSON.stringify(task.attributes));
-//   console.log('Worker attributes:', JSON.stringify(manager.workerClient?.attributes));
-
-//   if (task.taskChannelUniqueName === 'voice' && task.attributes.direction === 'inbound') {
-//     const userId = manager.workerClient?.attributes.userId;
-
-//     if (!userId) {
-//       console.log('Cannot update SF ticket owner ID. Worker attributes missing userId.');
-//       return;
-//     }
-
-//     if (task.attributes.ticketId) {
-//       console.log('Existing ticket found. Updating...');
-//       await updateSfTicket(task.attributes.ticketId, userId);
-//       screenPop(task.attributes.ticketId);
-//     } else if (task.attributes.sfcontactid) {
-//       console.log('No existing ticket. Creating a new one for SF Contact...');
-//       //const response = await createSfTicketmodified(task);
-//       console.log('create ticket response:', response);
-//       if (response.success) {
-//         screenPop(response.ticketId || task.attributes.sfcontactid);
-//       } else {
-//        console.error('Failed to create ticket:', response.error);
-//       }
-//     } else {
-//       console.log('No SF Contact ID. Creating a new ticket...');
-//       const response = await createSfTicket(task);
-//       if (response.success) {
-//         screenPop(response.ticketId);
-//       } else {
-//         console.error('Failed to create ticket for unrecognized caller:', response.error);
-//       }
-//     }
-//   }
-// };

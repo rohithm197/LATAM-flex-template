@@ -258,13 +258,14 @@ const createSfChatTicket = function (task) {
     window.sforce.opencti.saveLog({
       value: {
         entityApiName: 'Case',
-        Subject: `Inbound Chat from ${task.attributes.First_Name ?? ''} ${task.attributes.Last_Name ?? ''} ${task.dateCreated}`.trim(),
+        Subject: 'Inbound Chat from from ADA',
         Origin: 'Chat',
         RecordtypeId: '012i00000019r5uAAA',   // same RecordTypeId as voice
         ContactId: task.attributes.sfcontactid || undefined,
-        Description: `Inbound Chat from ${task.attributes.First_Name ?? ''} ${task.attributes.Last_Name ?? ''} ${task.dateCreated}`.trim(),
+        Description: "Inbound Chat from ADA Description",
       },
       callback: (response) => {
+        console.
         if (response.success && response.returnValue?.recordId) {
           const ticketId = response.returnValue.recordId;
           window.sforce.opencti.screenPop({
