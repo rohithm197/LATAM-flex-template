@@ -1,3 +1,4 @@
+import * as Flex from '@twilio/flex-ui';
 import { Manager } from '@twilio/flex-ui';
 
 import { Action } from '../../../../../types/manager';
@@ -5,10 +6,10 @@ import PhoneNumberService from '../../../../../utils/serverless/PhoneNumbers/Pho
 import { FETCH_PHONE_NUMBERS, SET_CALLER_ID } from './types';
 import { isOutgoingOnlyNumbersEnabled } from '../../../config';
 
-// Provide task to "pending" action as payload
-// https://github.com/pburtchaell/redux-promise-middleware/blob/main/docs/guides/optimistic-updates.md
-
 class Actions {
+  // -----------------------------
+  // EXISTING CODE (UNCHANGED)
+  // -----------------------------
   public static getPhoneNumbers = (): Action => {
     return {
       type: FETCH_PHONE_NUMBERS,
@@ -28,10 +29,26 @@ class Actions {
     return {
       type: SET_CALLER_ID,
       payload: {
-        promise: workerClient?.setAttributes({ ...workerClient.attributes, selectedCallerId }),
+        promise: workerClient?.setAttributes({
+          ...workerClient.attributes,
+          selectedCallerId,
+        }),
       },
     };
   };
+
+  public static registerOutboundCallMasking(): void {
+    Flex.Actions.addListener('beforeStartOutboundCall', (payload: any) => {
+      const destination = payload.destination;
+
+      payload.taskAttributes = {
+        ...payload.taskAttributes,
+
+        // ✅ Clean UI label
+        name: typeof destination === 'string' ? 'outbound call sip' : 'Outbound Call',
+      };
+    });
+  }
 }
 
 export default Actions;

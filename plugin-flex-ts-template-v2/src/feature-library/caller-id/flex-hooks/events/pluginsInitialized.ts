@@ -1,32 +1,57 @@
 import * as Flex from '@twilio/flex-ui';
 import { FlexEvent } from '../../../../types/feature-loader';
-import { callerIdList } from '../../config'; // get the callerIds json/list from config - sunil
+import { callerIdList } from '../../config';
+import Actions from '../states/OutboundCallerIDSelector/actions';
 
 export const eventName = FlexEvent.pluginsInitialized;
 
-export const eventHook = function initializeCallerIdCountry(flex: typeof Flex, manager: Flex.Manager) {
-  // Get the worker's location, default to 'IB' if not present or if it's an empty string default to IB
-  const loggedInWorkerLocation = manager.workerClient?.attributes.location?.trim() || 'IB';
+export const eventHook = function initializeCallerIdCountry(
+  flex: typeof Flex,
+  manager: Flex.Manager
+) {
+  // -------------------------------------------------
+  // 1️⃣ REGISTER OUTBOUND CALL "NAME" MASKING
+  // (THIS IS EXACTLY WHAT MITHUN MEANT)
+  // -------------------------------------------------
+  Actions.registerOutboundCallMasking();
 
-  // If the location contains 'PLHUB', map it to 'PL', otherwise keep the original location
-  let workerLocationPLHUB =  loggedInWorkerLocation;
+  // -------------------------------------------------
+  // 2️⃣ FLEX STRING OVERRIDES
+  // Force Flex UI to always show task.attributes.name
+  // -------------------------------------------------
+  const flexManager = Flex.Manager.getInstance();
 
-  if(loggedInWorkerLocation.includes('PLHUB')){
-    workerLocationPLHUB = 'IB'
-  } else if(loggedInWorkerLocation.includes('CEBIIL')){
-    workerLocationPLHUB = 'IL'
-  }else if(loggedInWorkerLocation.includes('PLBIZ')){
-    workerLocationPLHUB = 'UK'
-  }else if(loggedInWorkerLocation.includes('TURKEY')){
-    workerLocationPLHUB = 'TR'
+  flexManager.strings.TaskHeaderLine = 'outbound call sip';
+  flexManager.strings.TaskLineCallAssigned = 'outbound call sip';
+  flexManager.strings.TaskLineOutboundCallTitle =
+    'outbound call sip';
+
+  // -------------------------------------------------
+  // 3️⃣ WORKER LOCATION LOGIC (UNCHANGED)
+  // -------------------------------------------------
+  const loggedInWorkerLocation =
+    manager.workerClient?.attributes.location?.trim() || 'IB';
+
+  let workerLocationPLHUB = loggedInWorkerLocation;
+
+  if (loggedInWorkerLocation.includes('PLHUB')) {
+    workerLocationPLHUB = 'IB';
+  } else if (loggedInWorkerLocation.includes('CEBIIL')) {
+    workerLocationPLHUB = 'IL';
+  } else if (loggedInWorkerLocation.includes('PLBIZ')) {
+    workerLocationPLHUB = 'UK';
+  } else if (loggedInWorkerLocation.includes('TURKEY')) {
+    workerLocationPLHUB = 'TR';
   }
-  
-  // Get the dynamic country code based on the worker's location
-  // Use either loggedInWorkerLocation or workerLocationPLHUB (which will be 'IB' if the location is 'PLHUB')
-  const dynamicCountryCode = callerIdList[workerLocationPLHUB]?.country_code;
+
+  const dynamicCountryCode =
+    callerIdList[workerLocationPLHUB]?.country_code;
 
   console.log('dynamicCountryCode--initialized', dynamicCountryCode);
 
-  // Defining the outbound calling country dynamically based on the worker's location
-  flex.Manager.getInstance().serviceConfiguration.outbound_call_flows.default.location = dynamicCountryCode;
+  // -------------------------------------------------
+  // 4️⃣ APPLY OUTBOUND CALL LOCATION
+  // -------------------------------------------------
+  flexManager.serviceConfiguration.outbound_call_flows.default.location =
+    dynamicCountryCode;
 };
